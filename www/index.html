@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html ng-app="pieKiosk">
+	<head>
+		<title>Order Tracker</title>
+        
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
+        <!-- see http://webdesign.tutsplus.com/tutorials/htmlcss-tutorials/quick-tip-dont-forget-the-viewport-meta-tag -->
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=no">
+        <style>
+            /* following two viewport lines are equivalent to meta viewport statement above, needed for Windows */
+            /* see http://www.quirksmode.org/blog/archives/2014/05/html5_dev_conf.html and http://dev.w3.org/csswg/css-device-adapt/ */
+            @-ms-viewport { width: 100vw ; min-zoom: 100% ; zoom: 100% ; }  @viewport { width: 100vw ; min-zoom: 100% zoom: 100% ; }
+            @-ms-viewport { user-zoom: fixed ; min-zoom: 100% ; }           @viewport { user-zoom: fixed ; min-zoom: 100% ; }
+        </style>
+        
+        <script src="jquery.min.js"></script>
+        <script src="angular.js"></script>
+        <script src="angular-resource.min.js"></script>
+        <script src="pieCtrl.js"></script>
+	</head>
+    
+	<body ng-controller="pieCtrl">
+        
+        <link rel="stylesheet" href="kiosk.css">
+        
+        <div class="tab">
+            <button class="tablinks" ng-click="switchPage('newOrder')">New Order</button>
+            <button class="tablinks" ng-click="vis_page='orderedPies'">Ordered Pies</button>
+            <button class="tablinks" ng-click="vis_page='pieOrders'">Pie Orders</button>
+            <button class="tablinks" ng-click="vis_page='editOrder'">Edit Order</button>
+        </div>
+
+        
+        <div id="newOrder" class="tabcontent" ng-show="vis_page=='newOrder'"></div>
+        
+        <div id="newOrderWindow" class="orderWindowBackdrop">
+            <div class="orderWindow">
+                <div style="width:100%"><div>First Name: </div><input ng-model="newOrderFirstName" type="text" class="orderInput"></input></div>
+                <div style="width:100%"><div>Last Name: </div><input ng-model="newOrderLastName" type="text" class="orderInput"></input></div>
+                <div style="width:100%"><div>Date: </div><input ng-model="newOrderDatetime" type="datetime-local" class="orderInput"></div>
+                <div style="width:100%"><div>Phone: </div><input ng-model="newOrderPhone" type="tel" class="orderInput"></input></div>
+                <div style="width:100%"><div>Notes: </div><textarea  ng-model="newOrderNotes" type="text" rows="3" class="orderInput"></textarea></div>
+                <div>
+                    <button onclick="this.parentNode.parentNode.parentNode.style.display='none'" class="orderButton">Back</button>
+                    <button ng-click="submitOrder()" class="orderButton">Submit</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="orderedPies" class="tabcontent" ng-show="vis_page=='orderedPies'">
+            <div>asdsadasd</div>
+        </div>
+
+        <div id="pieOrders" class="tabcontent" ng-show="vis_page=='pieOrders'">
+            <div class="bottomnav">
+                <div>today</div>
+            </div>
+        </div>
+        
+        <div id="orderSearchWindow" class="orderWindowBackdrop" ng-show="vis_page=='editOrder'">
+            <div class="orderWindow" style="width:80vw;left:10vw;height:90vh;top:2vh">
+                <div style="margin-bottom:1vh">Search orders by name or phone number (no hyphens)</div>
+                <div><input id="orderSearchBox" type="text" class="orderInput" style="width:100%;font-size:5vh" oninput="search_orders()"></input></div>
+                <div class="searchResultsBox">
+                    <table id="resultsTable" class="searchResultTable" cellspacing="0">
+                        <tr><td class='pieHeader'>Customer Name</td><td class='pieHeader'>Date</td><td class='pieHeader'>Time</td><td class='pieHeader'>Order</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="editOrder" class="tabcontent"></div>
+
+        <div id="editOrderWindow" class="orderWindowBackdrop" ng-show="vis_page=='editOrder'">
+            <div class="orderWindow">
+                <div style="width:100%"><div>Name: </div><input id="editOrderName" type="text" class="orderInput"></input></div>
+                <div style="width:100%"><div>Date: </div><input id="editOrderDatetime" type="datetime-local" class="orderInput"></div>
+                <div style="width:100%"><div>Phone: </div><input id="editOrderPhone" type="tel" class="orderInput"></input></div>
+                <div style="width:100%"><div>Notes: </div><textarea  id="editOrderNotes" type="text" rows="3" class="orderInput"></textarea></div>
+                <div>
+                    <button onclick="this.parentNode.parentNode.parentNode.style.display='none'" class="orderButton">Back</button>
+                    <button ng-click="submitOrder()" class="orderButton">Submit</button>
+                </div>
+            </div>
+        </div>
+        
+	</body>
+</html>

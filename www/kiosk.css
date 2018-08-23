@@ -1,0 +1,170 @@
+body {
+                font-family: Arial;
+                width:100vw;
+                height:100vh;
+                margin:0;
+                overflow: hidden;
+            }
+
+            /* Style the tab */
+            .tab {
+                overflow: hidden;
+                background-color: #f1f1f1;
+                width:100%;
+                height:7vh;
+            }
+
+            /* Style the buttons inside the tab */
+            .tab button {
+                background-color: inherit;
+                float: left;
+                border: 1px solid gray;
+                outline: none;
+                cursor: pointer;
+                padding: 0.5vh;
+                transition: 0.1s;
+                font-size: 3vh;
+                width:25%;
+                height:100%;
+            }
+
+            /* Change background color of buttons on hover */
+            .tab button:hover {
+                background-color: #ddd;
+            }
+
+            /* Create an active/current tablink class */
+            .tab button.active {
+                background-color: #ccc;
+            }
+
+            /* Style the tab content */
+            .tabcontent {
+                width:100vw;
+                height:92vh;
+            }
+            
+            .bottomnav {
+                border: 1px solid #ccc;
+                height:8vh;
+                width:100vw;
+                bottom:0;
+            }
+            
+            .orderTable{
+                float:left;
+                width:33vw;
+                padding:0px;
+                border:none;
+                height:93vh;
+            }
+            tr{
+                padding:0px;
+                height: auto;
+            }
+            td{
+                font-size:2.3vh;
+                border:1px solid gray;
+                border-collapse: collapse;
+                padding:0px;
+            }
+            .pieName{
+                background-color:white;
+                border-bottom: 1px solid black;
+                border-right: 1px solid black;
+                width:20vw;
+                padding:1px;
+                padding-left:5px;
+            }
+            input{
+                font-size:2.3vh;
+                text-align:center;
+                border-width:0px;
+                border:none;
+                appearance:none;
+                box-shadow: none;
+                outline:none;
+                height:100%;
+                width:100%;
+            }
+            .pieInput8{
+                width:50%;
+                float:left;
+            }
+            .pieInput9{
+                width:50%;
+                margin-left:25%;
+            }
+            .pieInput10{
+                width:50%;
+                float:right;
+            }
+            .pieHeader{
+                text-align:center;
+                background-color:#ddd;
+                border-right:1px black solid;
+                border-bottom:1px black solid;
+                border-collapse: collapse;
+                font-weight:700;
+                font-size:2.3vh;
+                padding:1px;
+            }
+            .doneButton{
+                font-size:4vh;
+                height:100%;
+                width:100%;
+            }
+            
+            
+            .orderWindow{
+                background-color:white;
+                position:absolute;
+                height:50vh;
+                width:40vw;
+                top:20vh;
+                left:30vw;
+                font-size:2.5vh;
+                border:2px solid gray;
+                border-radius: 5px;
+                padding: 1vw;
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            }
+            .orderWindowBackdrop{
+                width:100%;
+                height:100%;
+                background-color: rgba(0,0,0,0.4);
+                position:absolute;
+                z-index:10;
+                display:none;
+                top:0px;
+            }
+            .orderInput{
+                width:40vw;
+                height:auto;
+                text-align:left;
+                border:1px solid black;
+                font-size:2.5vh;
+                float:left;
+                margin-bottom:1vh;
+            }
+            .orderButton{
+                width:20vw;
+                height:6vh;
+                font-size:3vh;
+                margin-top:1vh;
+                float:left;
+            }
+            
+            
+            .searchResultsBox{
+                overflow:auto;
+                width:100%;
+                border:1px solid gray;
+            }
+            .searchResultTable{
+                width:100%;
+            }
+            table.searchResultTable td{
+                font-size:2.5vh;
+                padding:2px;
+            }
