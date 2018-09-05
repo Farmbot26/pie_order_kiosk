@@ -1,162 +1,41 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////General Functions/////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
-angular.module('pieKiosk', []).controller('pieCtrl', function($scope) {
+angular.module('pieKiosk',[]).controller('pieCtrl', function($scope) {
 
 var homeURL = "http://192.168.1.194/farm_reg";
-    
-//Function to switch between the 4 pages
-$scope.switchPage = function(pageName) {
 
-    switch(pageName){
-        case "newOrder":
+function refreshOrderTable(){
+    fetch(homeURL+'/api/pie_orders/list_pies/').then(function(repon) {
+        repon.json().then(function(all_pies) {
+            $scope.all_pies = [all_pies.slice(0,33),all_pies.slice(34,65),all_pies.slice(66)];
             $scope.vis_page = "newOrder";
-            generateTable("newOrder",null);
-            break;
-        case "editOrder":
-            document.getElementById("orderSearchWindow").style.display="block";
-            break;
+            $scope.show_new = false;
+        });
+    }).catch(function(error) {alert(error);});
+}
+refreshOrderTable();
+    
+    
+var newOrderPies = [];
+var newOrderAmounts = [];
+$scope.enterPieAmount = function(amt,id){
+
+    var idx = newOrderPies.indexOf(id);
+    if(idx==-1){
+        newOrderPies.push(id);
+        newOrderAmounts.push(amt);
+    } else {
+        if(amt>0){
+            newOrderAmounts[idx] = amt;
+        } else {
+            newOrderPies.splice(idx,1);
+            newOrderAmounts.splice(idx,1);
+        }
     }
 };
 
     
-var newOrderPies = [];
-var newOrderAmounts = [];
-function enterPieAmount(inputElem,type){
-    if(isNaN(inputElem.id)){return;}
-
-    if(inputElem.value<=0){
-        inputElem.value="";
-    }
-
-    if(type=="new"){
-        var piesList = newOrderPies;
-        var amtList = newOrderAmounts;
-    } else {
-        var piesList = editOrderPies;
-        var amtList = editOrderAmounts;
-    }
-
-    var idx = piesList.indexOf(inputElem.id);
-    var amt = inputElem.value;
-    if(idx==-1){
-        piesList.push(inputElem.id);
-        amtList.push(amt);
-    } else {
-        if(amt>0){
-            amtList[idx] = amt;
-        } else {
-            piesList.splice(idx,1);
-            amtList.splice(idx,1);
-        }
-    }
-}            
-
-
-//Function to generate the order form table (New Order and Edit Order pages)
-function generateTable(mode, order){
-
-    //Get all the available kinds of pie from database
-    fetch(homeURL+'/api/pie_orders/list_pies/').then(function(repon) {
-        repon.json().then(function(all_pies) {
-            
-            console.log(all_pies);
-            $scope.all_pies = all_pies;
-            
-            function makeColumn(idx){
-                var col = document.createElement("table");
-                col.id = "newOrderTable"+idx;
-                col.setAttribute('cellspacing','0');
-                col.className = "orderTable";
-                document.getElementById(mode).appendChild(col);
-                return col;
-            }
-
-            var currentCol = makeColumn("1");
-
-            //Function to add headers to the sections
-            var alreadyHasHeader = false;
-
-            function addHeader(text){
-                var row = document.createElement("tr");
-                row.innerHTML="<td class='pieHeader'>8 Inch</td><td class='pieHeader'>10 Inch</td><td class='pieHeader' style='width:20vw'>"+text+"</td>";
-                currentCol.appendChild(row);
-            }
-
-            addHeader("FRUIT PIES");
-
-            //Loop through all the pies    
-            for(var i=1,ii=all_pies.length;i<ii;i++){
-
-                //Check if we need a header and add one if so
-                if(alreadyHasHeader){
-                    alreadyHasHeader = false;
-                } else if(all_pies[i].pie_name.includes("Donut")){
-                    var row = document.createElement("tr");
-                    row.innerHTML="<td class='pieHeader' colspan=3>OTHER</td>";
-                    currentCol.appendChild(row);
-                    alreadyHasHeader = true;
-                }
-                else{
-                    alreadyHasHeader = true;
-                    switch(all_pies[i].pie_name){
-                        case "Peach Crumb":
-                            currentCol = makeColumn("2");
-                            addHeader("FRUIT PIES");
-                            break;
-                        case "No Sugar Apple":
-                            addHeader("NO SUGAR ADDED");
-                            break;
-                        case "Banana Cream":
-                            currentCol = makeColumn("3");
-                            currentCol.style.width="34vw";
-                            addHeader("CREAM PIES");
-                            break;
-                        case "Asparagus Cheese":
-                            addHeader("VEGETABLE PIES");
-                            break;
-                        case "Tomato Cheese":
-                            alreadyHasHeader = false;
-                            break;
-                    }
-                }
-
-                //Parse through the pie data and enter in a row accordingly
-                var pie = all_pies[i];
-                var pie_id = parseInt(pie.pie_id);
-                var pie_name = pie.pie_name;
-                var pie_size = pie.pie_size;
-
-                var row = document.createElement("tr");
-
-                if(i+1<ii && all_pies[i+1].pie_name==pie_name){
-                    continue;
-                }else if(all_pies[i-1].pie_name==pie_name){
-                    row.innerHTML="<td><input id='"+(pie_id-1).toString()+"' type='number'></td><td><input id='"+pie_id+"' type='number' style='width:100%'></td><td class='pieName'>"+pie_name+"</td>";
-                } else if(pie_size=="8"){
-                    row.innerHTML="<td colspan=2 style='background-color:black'><input id='"+pie_id+"' type='number' class='pieInput8'></td><td class='pieName'>"+pie_name+"</td>";
-                } else if(pie_size=="10"){
-                    row.innerHTML="<td colspan=2 style='background-color:black'><input id='"+pie_id+"' type='number' class='pieInput10'></td><td class='pieName'>"+pie_name+"</td>";
-                } else {
-                    row.innerHTML="<td colspan=2 style='background-color:black'><input id='"+pie_id+"' type='number' class='pieInput9'></td><td class='pieName'>"+pie_name+"</td>";
-                }
-                currentCol.appendChild(row);
-            }
-
-            $("input").change(function(e){
-                enterPieAmount(e.target,"new");
-            });
-
-            //Add button to make customer info come up
-            var row = document.createElement("tr");
-            row.innerHTML="<td class='pieHeader' colspan=3><button class='doneButton' onclick=document.getElementById('newOrderWindow').style.display='block'>CUSTOMER INFO</button></td>";
-            currentCol.appendChild(row);
-
-        });
-    }).catch(function(error) {alert(error);});
-
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////Placing New Orders////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -205,11 +84,7 @@ $scope.submitOrder = function(){
     $scope.newOrderNotes = "";
 
     //Clear order table
-    document.getElementById("newOrder").innerHTML="";
-    generateTable();
-
-    //Close info window
-    document.getElementById("newOrderWindow").style.display="none";
+    refreshOrderTable();
 };
 
 
@@ -217,7 +92,7 @@ $scope.submitOrder = function(){
 ////////////////////////////////Searching Orders////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-function search_orders(){
+$scope.search_orders = function(){
 
     var query = {search_term:document.getElementById("orderSearchBox").value};
 
@@ -264,7 +139,7 @@ function search_orders(){
                 } catch(x) {
                     row.onclick = function(){
                         console.log(x);
-                        generateTable("editOrder",order);
+                        //generateTable("editOrder",order);
                         document.getElementById("orderSearchWindow").style.display="none";
                     };
                 }
