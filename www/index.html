@@ -64,14 +64,14 @@
                 </tr>
                 
                 <tr ng-if="all_pies_col.length<31">
-                    <td class='pieHeader' colspan=3><button ng-click="getMyCtrlScope().show_new_window=true" class='doneButton'>CUSTOMER INFO</button></td>
+                    <td class='pieHeader' colspan=3><button ng-click="getMyCtrlScope().show_cust_window=true" class='doneButton'>CUSTOMER INFO</button></td>
                 </tr>
 
             </table>
         </div>
         
         <!-- Customer info window -->
-        <div class="orderWindowBackdrop" ng-show="show_new_window">
+        <div class="orderWindowBackdrop" ng-show="show_cust_window">
             <div class="orderWindow">
                 <div style="width:100%"><div>First Name: </div><input ng-model="newOrderFirstName" type="text" class="orderInput"></div>
                 <div style="width:100%"><div>Last Name: </div><input ng-model="newOrderLastName" type="text" class="orderInput"></div>
@@ -79,7 +79,7 @@
                 <div style="width:100%"><div>Phone: </div><input ng-model="newOrderPhone" type="tel" class="orderInput"></div>
                 <div style="width:100%"><div>Notes: </div><textarea  ng-model="newOrderNotes" type="text" rows="3" class="orderInput"></textarea></div>
                 <div>
-                    <button ng-click="show_new_window=false" class="orderButton">Back</button>
+                    <button ng-click="show_cust_window=false" class="orderButton">Back</button>
                     <button ng-click="submitOrder()" class="orderButton">Submit</button>
                 </div>
             </div>

@@ -2,9 +2,9 @@ angular.module('pieKiosk',[]).controller('pieCtrl', function($scope) {
 
 var homeURL = "http://192.168.1.194/farm_reg";
     
-    $scope.getMyCtrlScope = function() {
-         return $scope;   
-    }
+$scope.getMyCtrlScope = function() {
+     return $scope;   
+}
     
 ////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////Pie Order Form/////////////////////////////////////////////////
@@ -17,8 +17,9 @@ function refreshOrderTable(){
             $scope.pies_list = pies_list;
             $scope.all_pies = [pies_list.slice(0,33),pies_list.slice(34,65),pies_list.slice(66)];
             $scope.vis_page = "orderForm";
-            $scope.show_new_window = false;
-            //$scope.$digest();
+            $scope.show_cust_window = false;
+            $scope.show_search_window = false;
+            $scope.$digest();
         });
     }).catch(function(error) {alert(error);});
 }
@@ -102,7 +103,7 @@ $scope.submitOrder = function(){
 
 //Run whenever the search box is typed in
 $scope.search_orders = function(){
-
+    
     var query = {search_term:$scope.order_search_box};
 
     if(query.search_term.length<3){
@@ -140,6 +141,7 @@ $scope.search_orders = function(){
             }
             
             $scope.found_orders = orders;
+            $scope.$digest(); ///Wasn't necessary before. WTF happened?
 
         });
     }, function(error) {alert(error);});
