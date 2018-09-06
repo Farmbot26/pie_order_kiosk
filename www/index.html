@@ -26,10 +26,10 @@
         
         <!-- Top Navbar -->
         <div class="tab">
-            <button ng-click="vis_page='orderForm'">New Order</button>
+            <button ng-click="vis_page='orderForm';order_mode='new'">New Order</button>
             <button ng-click="vis_page='orderedPies'">Ordered Pies</button>
             <button ng-click="vis_page='pieOrders'">Pie Orders</button>
-            <button ng-click="show_search_window=true;vis_page='orderForm'">Edit Order</button>
+            <button ng-click="show_search_window=true;vis_page='orderForm';order_mode='edit'">Edit Order</button>
         </div>
 
         <!-- Pie order form for "New Order" and "Edit Order" -->
@@ -75,7 +75,7 @@
             <div class="orderWindow">
                 <div style="width:100%"><div>First Name: </div><input ng-model="newOrderFirstName" type="text" class="orderInput"></div>
                 <div style="width:100%"><div>Last Name: </div><input ng-model="newOrderLastName" type="text" class="orderInput"></div>
-                <div style="width:100%"><div>Date: </div><input ng-model="newOrderDatetime" type="datetime-local" class="orderInput"></div>
+                <div style="width:100%"><div>Date & Time: </div><input ng-model="newOrderDatetime" type="datetime-local" class="orderInput"></div>
                 <div style="width:100%"><div>Phone: </div><input ng-model="newOrderPhone" type="tel" class="orderInput"></div>
                 <div style="width:100%"><div>Notes: </div><textarea  ng-model="newOrderNotes" type="text" rows="3" class="orderInput"></textarea></div>
                 <div>
@@ -99,11 +99,47 @@
                 </div>
             </div>
         </div>
-
-
+    
+    
+    
+        <!-- List of all ordered pies for a given day -->
         <div class="tabcontent" ng-show="vis_page=='orderedPies'">
-            <div>asdsadasd</div>
+            <table cellspacing="0" class="orderTable" ng-repeat="all_pies_col in all_pies">
+
+                <tr ng-repeat-start="pie in all_pies_col track by $index" ng-if="pie.pie_id==1 || pie.pie_id==35 || pie.pie_id==62 || pie.pie_id==67 || pie.pie_id==71 || pie.pie_id==83">
+                    
+                    <td ng-if="pie.pie_id!=83" class='pieHeader'>8 Inch</td>
+                    <td ng-if="pie.pie_id!=83" class='pieHeader'>10 Inch</td>
+                    <td ng-if="pie.pie_id<50" class='pieHeader' style='width:20vw'>FRUIT PIES</td>
+                    <td ng-if="pie.pie_id==62" class='pieHeader' style='width:20vw'>NO SUGAR PIES</td>
+                    <td ng-if="pie.pie_id==67" class='pieHeader' style='width:20vw'>CREAM PIES</td>
+                    <td ng-if="pie.pie_id==71" class='pieHeader' style='width:20vw'>VEGETABLE PIES</td>
+                    <td ng-if="pie.pie_id==83" class='pieHeader' colspan=3>OTHER</td>
+                    
+                </tr>
+                
+                <tr ng-repeat-end ng-if="pie.pie_name!=all_pies_col[$index+1].pie_name">
+                    
+                    <td ng-if="pie.pie_name==all_pies_col[$index-1].pie_name"><input type="number" ng-model="pie.amt1" ng-change="enterPieAmount(pie.amt1,pie.pie_id-1)"></td>
+                    <td ng-if="pie.pie_name==all_pies_col[$index-1].pie_name"><input type="number" style="width:100%" ng-model="pie.amt2" ng-change="enterPieAmount(pie.amt2,pie.pie_id)"></td>
+                    
+                    <td ng-if="pie.pie_name!=all_pies_col[$index-1].pie_name && pie.pie_size==8" colspan=2 style='background-color:black'><input type='number' class='pieInput8' ng-model="pie.amt1" ng-change="enterPieAmount(pie.amt1,pie.pie_id)"></td>
+                    
+                    <td ng-if="pie.pie_name!=all_pies_col[$index-1].pie_name && (pie.pie_size==9 || pie.pie_size==0)" colspan=2 style='background-color:black'><input type='number' class='pieInput9' ng-model="pie.amt1" ng-change="enterPieAmount(pie.amt1,pie.pie_id)"></td>
+                    
+                    <td ng-if="pie.pie_name!=all_pies_col[$index-1].pie_name && pie.pie_size==10" colspan=2 style='background-color:black'><input type='number' class='pieInput10' ng-model="pie.amt1" ng-change="enterPieAmount(pie.amt1,pie.pie_id)"></td>
+                    
+                    <td class='pieName'>{{pie.pie_name}}</td>
+                    
+                </tr>
+                
+                <tr ng-if="all_pies_col.length<31">
+                    <td class='pieHeader' colspan=3><button ng-click="getMyCtrlScope().show_cust_window=true" class='doneButton'>CUSTOMER INFO</button></td>
+                </tr>
+
+            </table>
         </div>
+
 
         <div class="tabcontent" ng-show="vis_page=='pieOrders'">
             <div class="bottomnav">

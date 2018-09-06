@@ -4,7 +4,7 @@ var homeURL = "http://192.168.1.194/farm_reg";
     
 $scope.getMyCtrlScope = function() {
      return $scope;   
-}
+};
     
 ////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////Pie Order Form/////////////////////////////////////////////////
@@ -16,16 +16,20 @@ function refreshOrderTable(){
         repon.json().then(function(pies_list) {
             $scope.pies_list = pies_list;
             $scope.all_pies = [pies_list.slice(0,33),pies_list.slice(34,65),pies_list.slice(66)];
+            
             $scope.vis_page = "orderForm";
             $scope.show_cust_window = false;
             $scope.show_search_window = false;
+            $scope.order_mode = "new";
+            
             $scope.$digest();
         });
     }).catch(function(error) {alert(error);});
 }
 refreshOrderTable();
     
-    
+
+//Run whenever a pie quantity is changed in the order form
 var newOrderPies = [];
 var newOrderAmounts = [];
 $scope.enterPieAmount = function(amt,id){
@@ -44,11 +48,8 @@ $scope.enterPieAmount = function(amt,id){
     }
 };
 
-    
-////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////Placing New Orders////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////
-    
+
+//Submit a new order or update an existing one
 $scope.submitOrder = function(){
 
     //Check for actual pie order
@@ -69,6 +70,19 @@ $scope.submitOrder = function(){
                 pies:newOrderPies,
                 amounts:newOrderAmounts
             };
+    
+    if($scope.order_mode=="edit"){
+        //delete old version of order from database
+        fetch(homeURL+'/api/pie_orders/delete_order/', {method:"POST", body:JSON.stringify({"payload":{order_id:$scope.edit_order_id}})});
+//            .then(function(response) {
+//                response.json().then(function(d) {
+//                    //console.log(d);
+//                    //alert("Invalid product data");
+//                });
+//            }, function(error) {
+//                alert("No internet connection probably");
+//        });
+    }
 
     //Send to database
     fetch(homeURL+'/api/pie_orders/new_order/', {method:"POST", body:JSON.stringify({"payload":order})})
@@ -92,7 +106,6 @@ $scope.submitOrder = function(){
     $scope.newOrderPhone = null;
     $scope.newOrderNotes = "";
 
-    //Clear order table
     refreshOrderTable();
 };
 
@@ -150,26 +163,49 @@ $scope.search_orders = function(){
 
 //Run when an order in the order search window is clicked
 $scope.select_order = function(order){
+    
+    //Keep track of order id for deleting old version later
+    $scope.edit_order_id = order.id;
+    
+    //Clear table
+    refreshOrderTable();
 
     //Update quantities in the order form table
     for(var i=0, ii=order.pies.length; i<ii; i++){
         var pie=order.pies[i];
         var idx = pie.pie_id-1;
 
-        if($scope.pies_list[idx].pie_name == $scope.pies_list[idx-1].pie_name){
+        if(idx<$scope.pies_list.length-1 && $scope.pies_list[idx].pie_name == $scope.pies_list[idx+1].pie_name){
+            $scope.pies_list[idx+1].amt1 = pie.quantity;
+            
+        } else if($scope.pies_list[idx].pie_name == $scope.pies_list[idx-1].pie_name){
             $scope.pies_list[idx].amt2 = pie.quantity;
+            
         } else {
             $scope.pies_list[idx].amt1 = pie.quantity;
         }
+        
+        //Update behind the scenes record
+        $scope.enterPieAmount(pie.quantity,pie.pie_id);
     }
     
+    //Clear search window
+    $scope.order_search_box = null;
+    $scope.found_orders = null;
+    
     //Update customer info window
+    $scope.newOrderLastName = order.last_name;
+    $scope.newOrderFirstName = order.first_name;
+    $scope.newOrderDatetime = new Date(Date.parse(order.date_time.replace(" ","T")));
+    $scope.newOrderDatetime.setTime($scope.newOrderDatetime.getTime()+14400000); 
+    $scope.newOrderPhone = order.phone;
+    $scope.newOrderNotes = order.notes;
     
     $scope.show_search_window = false;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////Editing Orders////////////////////////////////////////////////
+//////////////////////////////////Listing Ordered Pies//////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 
