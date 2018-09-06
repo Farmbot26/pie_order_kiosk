@@ -87,7 +87,7 @@ $scope.submitOrder = function(){
     //Clear customer info inputs
     $scope.newOrderLastName = "";
     $scope.newOrderFirstName = "";
-    $scope.date_time = null;
+    $scope.newOrderDatetime = null;
     $scope.newOrderPhone = null;
     $scope.newOrderNotes = "";
 
