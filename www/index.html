@@ -26,10 +26,10 @@
         
         <!-- Top Navbar -->
         <div class="tab">
-            <button ng-click="vis_page='orderForm';order_mode='new'">New Order</button>
+            <button ng-style="{'background-color':(order_mode=='new'&&vis_page=='orderForm'?'#ccc':'#f1f1f1') }" ng-click="vis_page='orderForm';order_mode='new';refreshOrderTable()">New Order</button>
             <button ng-click="vis_page='orderedPies'">Ordered Pies</button>
             <button ng-click="vis_page='pieOrders'">Pie Orders</button>
-            <button ng-click="show_search_window=true;vis_page='orderForm';order_mode='edit'">Edit Order</button>
+            <button ng-style="{'background-color':(order_mode=='edit'&&vis_page=='orderForm'?'#ccc':'#f1f1f1') }" ng-click="show_search_window=true;vis_page='orderForm';order_mode='edit'">Edit Order</button>
         </div>
 
         <!-- Pie order form for "New Order" and "Edit Order" -->
@@ -89,7 +89,7 @@
         <!-- Search orders window -->
         <div class="orderWindowBackdrop" ng-show="show_search_window">
             <div class="orderWindow" style="width:80vw;left:10vw;height:90vh;top:2vh;font-size:3vh">
-                <div style="margin-bottom:1vh">Search orders by name or phone number (no hyphens) <button style="float:right;font-size:3vh" ng-click="show_search_window=false">Cancel</button></div>
+                <div style="margin-bottom:1vh">Search orders by name or phone number (no hyphens) <button style="float:right;font-size:3vh" ng-click="show_search_window=false;order_mode='new'">Cancel</button></div>
                 <div><input type="text" class="orderInput" style="width:100%;font-size:5vh" ng-model="order_search_box" ng-change="search_orders()"></input></div>
                 <div class="searchResultsBox">
                     <table class="searchResultTable" cellspacing="0">

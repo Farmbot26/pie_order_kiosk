@@ -10,23 +10,36 @@ $scope.getMyCtrlScope = function() {
 /////////////////////////////////Pie Order Form/////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
+//Retrieve the initial list of all available pies
+fetch(homeURL+'/api/pie_orders/list_pies/').then(function(repon) {
+    repon.json().then(function(pies_list) {
+        $scope.pies_list_original = pies_list;
+        $scope.pies_list = pies_list;
+        
+        $scope.refreshOrderTable();
+        $scope.$digest();
+    });
+}).catch(function(error) {alert(error);});
+
+
 //Clear and rebuild order form
-function refreshOrderTable(){
-    fetch(homeURL+'/api/pie_orders/list_pies/').then(function(repon) {
-        repon.json().then(function(pies_list) {
-            $scope.pies_list = pies_list;
-            $scope.all_pies = [pies_list.slice(0,33),pies_list.slice(34,65),pies_list.slice(66)];
-            
-            $scope.vis_page = "orderForm";
-            $scope.show_cust_window = false;
-            $scope.show_search_window = false;
-            $scope.order_mode = "new";
-            
-            $scope.$digest();
-        });
-    }).catch(function(error) {alert(error);});
-}
-refreshOrderTable();
+$scope.order_mode = "new";
+$scope.refreshOrderTable = function(){
+    
+    $scope.pies_list = $scope.pies_list_original;
+    $scope.all_pies = [$scope.pies_list.slice(0,33),$scope.pies_list.slice(34,65),$scope.pies_list.slice(66)];
+    
+    for(var i=0, ii=$scope.pies_list.length; i<ii; i++){
+        $scope.pies_list[i].amt1 = null;
+        $scope.pies_list[i].amt2 = null;
+    }
+
+    $scope.vis_page = "orderForm";
+    $scope.show_cust_window = false;
+    $scope.show_search_window = false;
+    
+};
+
     
 
 //Run whenever a pie quantity is changed in the order form
@@ -74,14 +87,6 @@ $scope.submitOrder = function(){
     if($scope.order_mode=="edit"){
         //delete old version of order from database
         fetch(homeURL+'/api/pie_orders/delete_order/', {method:"POST", body:JSON.stringify({"payload":{order_id:$scope.edit_order_id}})});
-//            .then(function(response) {
-//                response.json().then(function(d) {
-//                    //console.log(d);
-//                    //alert("Invalid product data");
-//                });
-//            }, function(error) {
-//                alert("No internet connection probably");
-//        });
     }
 
     //Send to database
@@ -105,8 +110,11 @@ $scope.submitOrder = function(){
     $scope.newOrderDatetime = null;
     $scope.newOrderPhone = null;
     $scope.newOrderNotes = "";
+    
+    newOrderPies = [];
+    newOrderAmounts = [];
 
-    refreshOrderTable();
+    $scope.refreshOrderTable();
 };
 
 
@@ -168,7 +176,7 @@ $scope.select_order = function(order){
     $scope.edit_order_id = order.id;
     
     //Clear table
-    refreshOrderTable();
+    $scope.refreshOrderTable();
 
     //Update quantities in the order form table
     for(var i=0, ii=order.pies.length; i<ii; i++){
@@ -197,7 +205,7 @@ $scope.select_order = function(order){
     $scope.newOrderLastName = order.last_name;
     $scope.newOrderFirstName = order.first_name;
     $scope.newOrderDatetime = new Date(Date.parse(order.date_time.replace(" ","T")));
-    $scope.newOrderDatetime.setTime($scope.newOrderDatetime.getTime()+14400000); 
+    $scope.newOrderDatetime.setTime($scope.newOrderDatetime.getTime()+14400000);
     $scope.newOrderPhone = order.phone;
     $scope.newOrderNotes = order.notes;
     
