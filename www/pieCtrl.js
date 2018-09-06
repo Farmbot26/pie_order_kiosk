@@ -1,16 +1,24 @@
-////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////General Functions/////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////
 angular.module('pieKiosk',[]).controller('pieCtrl', function($scope) {
 
 var homeURL = "http://192.168.1.194/farm_reg";
+    
+    $scope.getMyCtrlScope = function() {
+         return $scope;   
+    }
+    
+////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////Pie Order Form/////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+//Clear and rebuild order form
 function refreshOrderTable(){
     fetch(homeURL+'/api/pie_orders/list_pies/').then(function(repon) {
-        repon.json().then(function(all_pies) {
-            $scope.all_pies = [all_pies.slice(0,33),all_pies.slice(34,65),all_pies.slice(66)];
-            $scope.vis_page = "newOrder";
-            $scope.show_new = false;
+        repon.json().then(function(pies_list) {
+            $scope.pies_list = pies_list;
+            $scope.all_pies = [pies_list.slice(0,33),pies_list.slice(34,65),pies_list.slice(66)];
+            $scope.vis_page = "orderForm";
+            $scope.show_new_window = false;
+            //$scope.$digest();
         });
     }).catch(function(error) {alert(error);});
 }
@@ -92,65 +100,71 @@ $scope.submitOrder = function(){
 ////////////////////////////////Searching Orders////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
+//Run whenever the search box is typed in
 $scope.search_orders = function(){
 
-    var query = {search_term:document.getElementById("orderSearchBox").value};
+    var query = {search_term:$scope.order_search_box};
 
     if(query.search_term.length<3){
-        var resultsTable = document.getElementById("resultsTable");
-        resultsTable.innerHTML = "<tr><td class='pieHeader'>Customer Name</td><td class='pieHeader'>Date</td><td class='pieHeader'>Time</td><td class='pieHeader'>Order</td></tr>";
+        $scope.found_orders = [];
         return;
     }
 
-    //Get all orders with the search query in the first or last name
+    //Get all orders with the search query in the first name, last name, or phone number
     fetch(homeURL+'/api/pie_orders/search_orders/', {method:"POST", body:JSON.stringify({"payload":query})}).then(function(repon) {
         repon.json().then(function(orders) {
-
-            //Initialize the results table
-             var resultsTable = document.getElementById("resultsTable");
-            resultsTable.innerHTML = "<tr><td class='pieHeader'>Customer Name</td><td class='pieHeader'>Date</td><td class='pieHeader'>Time</td><td class='pieHeader'>Order</td></tr>";
-
+            
+            //Add attributes for easier display
             for(var i=0,ii=orders.length;i<ii;i++){
                 var order = orders[i];
-                var last_name = order.last_name;
-                var first_name = order.first_name;
+                
                 var date = order.date_time.split(" ")[0];
                 date = date.split("-");
                 date = date[1]+"/"+date[2]+"/"+date[0];
-                var time = order.date_time.split(" ")[1];
-                var phone = order.phone;
-                var notes = order.notes;
+                orders[i].disp_date = date;
+                
+                orders[i].time = order.date_time.split(" ")[1];
 
                 var pies = [];
                 for(var j=0,jj=order.pies.length;j<jj;j++){
                     var pie = order.pies[j];
-                    pies.push(' '+pie.pie_size+'" '+pie.pie_name);
+                    pies.push(' '+pie.quantity+'x'+pie.pie_size+'" '+pie.pie_name);
                 }
                 pies = pies.toString();
                 if(pies.length>80){
                     pies = pies.slice(0,80)+"...";
                 }
+                
+                orders[i].disp_order = pies;
 
-                var row = document.createElement("tr");
-                row.innerHTML = "<td>"+last_name+", "+first_name+"</td><td>"+date+"</td><td>"+time+"</td><td>"+pies+"</td>";
-
-                try{
-                   throw last_name; 
-                } catch(x) {
-                    row.onclick = function(){
-                        console.log(x);
-                        //generateTable("editOrder",order);
-                        document.getElementById("orderSearchWindow").style.display="none";
-                    };
-                }
-
-
-                resultsTable.appendChild(row);
             }
+            
+            $scope.found_orders = orders;
 
         });
     }, function(error) {alert(error);});
-}
+};
+
+
+//Run when an order in the order search window is clicked
+$scope.select_order = function(order){
+
+    //Update quantities in the order form table
+    for(var i=0, ii=order.pies.length; i<ii; i++){
+        var pie=order.pies[i];
+        var idx = pie.pie_id-1;
+
+        if($scope.pies_list[idx].pie_name == $scope.pies_list[idx-1].pie_name){
+            $scope.pies_list[idx].amt2 = pie.quantity;
+        } else {
+            $scope.pies_list[idx].amt1 = pie.quantity;
+        }
+    }
+    
+    //Update customer info window
+    
+    $scope.show_search_window = false;
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////Editing Orders////////////////////////////////////////////////
