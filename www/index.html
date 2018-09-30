@@ -16,6 +16,8 @@
         
         <script src="jquery.min.js"></script>
         <script src="angular.js"></script>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.4.1/jspdf.debug.js" integrity="sha384-THVO/sM0mFD9h7dfSndI6TS0PgAGavwKvB5hAxRRvc0o9cPLohB0wb/PTA7LdUHs" crossorigin="anonymous"></script>
         
         <script src="pieCtrl.js"></script>
 	</head>
@@ -26,9 +28,10 @@
         
         <!-- Top Navbar -->
         <div class="tab">
-            <button ng-style="{'background-color':(order_mode=='new'&&vis_page=='orderForm'?'#ccc':'#f1f1f1') }" ng-click="vis_page='orderForm';order_mode='new';refreshOrderTable()">New Order</button>
-            <button ng-click="vis_page='orderedPies'">Ordered Pies</button>
-            <button ng-click="vis_page='pieOrders'">Pie Orders</button>
+            <button ng-style="{'background-color':(order_mode=='new'&&vis_page=='orderForm'?'#ccc':'#f1f1f1') }" ng-click="vis_page='orderForm';order_mode='new';refreshOrderTable();clearVals()">New Order</button>
+            <button ng-style="{'background-color':(vis_page=='orderedPies'?'#ccc':'#f1f1f1') }" ng-click="vis_page='orderedPies';get_ordered_pies()">Ordered Pies</button>
+            <button ng-style="{'background-color':(vis_page=='pieOrders'?'#ccc':'#f1f1f1') }" ng-click="vis_page='pieOrders';get_pie_orders()">Pie Orders</button>
+            <button ng-style="{'background-color':(order_mode=='counter'&&vis_page=='orderForm'?'#ccc':'#f1f1f1') }" ng-click="vis_page='orderForm';order_mode='counter';refreshCounter()">Counter</button>
             <button ng-style="{'background-color':(order_mode=='edit'&&vis_page=='orderForm'?'#ccc':'#f1f1f1') }" ng-click="show_search_window=true;vis_page='orderForm';order_mode='edit'">Edit Order</button>
         </div>
 
@@ -36,13 +39,13 @@
         <div class="tabcontent" ng-show="vis_page=='orderForm'">
             <table cellspacing="0" class="orderTable" ng-repeat="all_pies_col in all_pies">
 
-                <tr ng-repeat-start="pie in all_pies_col track by $index" ng-if="pie.pie_id==1 || pie.pie_id==35 || pie.pie_id==62 || pie.pie_id==67 || pie.pie_id==71 || pie.pie_id==83">
+                <tr ng-repeat-start="pie in all_pies_col track by $index" ng-if="pie.pie_id==1 || pie.pie_id==35 || pie.pie_id==62 || pie.pie_id==66 || pie.pie_id==71 || pie.pie_id==83">
                     
                     <td ng-if="pie.pie_id!=83" class='pieHeader'>8 Inch</td>
                     <td ng-if="pie.pie_id!=83" class='pieHeader'>10 Inch</td>
                     <td ng-if="pie.pie_id<50" class='pieHeader' style='width:20vw'>FRUIT PIES</td>
                     <td ng-if="pie.pie_id==62" class='pieHeader' style='width:20vw'>NO SUGAR PIES</td>
-                    <td ng-if="pie.pie_id==67" class='pieHeader' style='width:20vw'>CREAM PIES</td>
+                    <td ng-if="pie.pie_id==66" class='pieHeader' style='width:20vw'>CREAM PIES</td>
                     <td ng-if="pie.pie_id==71" class='pieHeader' style='width:20vw'>VEGETABLE PIES</td>
                     <td ng-if="pie.pie_id==83" class='pieHeader' colspan=3>OTHER</td>
                     
@@ -50,21 +53,21 @@
                 
                 <tr ng-repeat-end ng-if="pie.pie_name!=all_pies_col[$index+1].pie_name">
                     
-                    <td ng-if="pie.pie_name==all_pies_col[$index-1].pie_name"><input type="number" ng-model="pie.amt1" ng-change="enterPieAmount(pie.amt1,pie.pie_id-1)"></td>
-                    <td ng-if="pie.pie_name==all_pies_col[$index-1].pie_name"><input type="number" style="width:100%" ng-model="pie.amt2" ng-change="enterPieAmount(pie.amt2,pie.pie_id)"></td>
+                    <td ng-if="pie.pie_name==all_pies_col[$index-1].pie_name"><input type="number" min="0" ng-model="pie.amt1" ng-change="enterPieAmount(pie.amt1,pie.pie_id-1)" ng-style="{'background-color':(pie.amt1>0?'yellow':'white') }"></td>
+                    <td ng-if="pie.pie_name==all_pies_col[$index-1].pie_name"><input type="number" min="0" style="width:100%" ng-model="pie.amt2" ng-change="enterPieAmount(pie.amt2,pie.pie_id)" ng-style="{'background-color':(pie.amt2>0?'yellow':'white') }"></td>
                     
-                    <td ng-if="pie.pie_name!=all_pies_col[$index-1].pie_name && pie.pie_size==8" colspan=2 style='background-color:black'><input type='number' class='pieInput8' ng-model="pie.amt1" ng-change="enterPieAmount(pie.amt1,pie.pie_id)"></td>
+                    <td ng-if="pie.pie_name!=all_pies_col[$index-1].pie_name && pie.pie_size==8" colspan=2 style='background-color:black'><input type='number' min="0" class='pieInput8' ng-model="pie.amt1" ng-change="enterPieAmount(pie.amt1,pie.pie_id)" ng-style="{'background-color':(pie.amt1>0?'yellow':'white') }"></td>
                     
-                    <td ng-if="pie.pie_name!=all_pies_col[$index-1].pie_name && (pie.pie_size==9 || pie.pie_size==0)" colspan=2 style='background-color:black'><input type='number' class='pieInput9' ng-model="pie.amt1" ng-change="enterPieAmount(pie.amt1,pie.pie_id)"></td>
+                    <td ng-if="pie.pie_name!=all_pies_col[$index-1].pie_name && (pie.pie_size==9 || pie.pie_size==0)" colspan=2 style='background-color:black'><input type='number' min="0" class='pieInput9' ng-model="pie.amt1" ng-change="enterPieAmount(pie.amt1,pie.pie_id)" ng-style="{'background-color':(pie.amt1>0?'yellow':'white') }"></td>
                     
-                    <td ng-if="pie.pie_name!=all_pies_col[$index-1].pie_name && pie.pie_size==10" colspan=2 style='background-color:black'><input type='number' class='pieInput10' ng-model="pie.amt1" ng-change="enterPieAmount(pie.amt1,pie.pie_id)"></td>
+                    <td ng-if="pie.pie_name!=all_pies_col[$index-1].pie_name && pie.pie_size==10" colspan=2 style='background-color:black'><input type='number' min="0" class='pieInput10' ng-model="pie.amt1" ng-change="enterPieAmount(pie.amt1,pie.pie_id)" ng-style="{'background-color':(pie.amt1>0?'yellow':'white') }"></td>
                     
-                    <td class='pieName'>{{pie.pie_name}}</td>
+                    <td class='pieName' ng-style="{'background-color':(pie.amt1>0||pie.amt2>0?'yellow':'white') }">{{pie.pie_name}}</td>
                     
                 </tr>
                 
                 <tr ng-if="all_pies_col.length<31">
-                    <td class='pieHeader' colspan=3><button ng-click="getMyCtrlScope().show_cust_window=true" class='doneButton'>CUSTOMER INFO</button></td>
+                    <td class='pieHeader' colspan=3><button ng-click="getMyCtrlScope().show_cust_window=(order_mode!='counter');getMyCtrlScope().show_counter_window=(order_mode=='counter')" class='doneButton'>{{ order_mode!='counter' ? 'CUSTOMER INFO' : 'DATE & RECORDING' }}</button></td>
                 </tr>
 
             </table>
@@ -82,6 +85,22 @@
                     <button ng-click="show_cust_window=false" class="orderButton">Back</button>
                     <button ng-click="submitOrder()" class="orderButton">Submit</button>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Counter bake confirm window -->
+        <div class="orderWindowBackdrop" ng-show="show_counter_window">
+            <div class="orderWindow" style="width:80vw;left:10vw;height:35vh;top:2vh;font-size:3vh">
+                <div style="margin-bottom:1vh">Editing counter bake for <button style="float:right;font-size:3vh" ng-click="show_counter_window=false">Close</button></div>
+                
+                <div style="width:80vw;text-align:center;display:flex;margin-top:8vh">
+                    <button ng-click="advanceCounterDate(-1)" style="float:left;width:9vw"><i class="material-icons md-48">arrow_back_ios</i></button>
+                    <div style="float:left;flex:1;font-size:5vh">{{counter_disp_date}}</div>
+                    <button ng-click="advanceCounterDate(1)" style="float:left;width:9vw"><i class="material-icons md-48">arrow_forward_ios</i></button>
+                </div>
+                
+                <div style="width:100%;text-align:center;margin-top:8vh"><button ng-click="saveCounter();show_counter_window=false" style="font-size:5vh">Save</button></div>
+                
             </div>
         </div>
 
@@ -104,47 +123,188 @@
     
         <!-- List of all ordered pies for a given day -->
         <div class="tabcontent" ng-show="vis_page=='orderedPies'">
-            <table cellspacing="0" class="orderTable" ng-repeat="all_pies_col in all_pies">
+            
+            <div ng-hide="big_ordered_pies||other_ordered_pies" class="noOrdersToday">No pie orders for today!</div>
+            
+            <table cellspacing="0" style="width:50%;float:left" ng-show="big_ordered_pies||other_ordered_pies">
 
-                <tr ng-repeat-start="pie in all_pies_col track by $index" ng-if="pie.pie_id==1 || pie.pie_id==35 || pie.pie_id==62 || pie.pie_id==67 || pie.pie_id==71 || pie.pie_id==83">
-                    
-                    <td ng-if="pie.pie_id!=83" class='pieHeader'>8 Inch</td>
-                    <td ng-if="pie.pie_id!=83" class='pieHeader'>10 Inch</td>
-                    <td ng-if="pie.pie_id<50" class='pieHeader' style='width:20vw'>FRUIT PIES</td>
-                    <td ng-if="pie.pie_id==62" class='pieHeader' style='width:20vw'>NO SUGAR PIES</td>
-                    <td ng-if="pie.pie_id==67" class='pieHeader' style='width:20vw'>CREAM PIES</td>
-                    <td ng-if="pie.pie_id==71" class='pieHeader' style='width:20vw'>VEGETABLE PIES</td>
-                    <td ng-if="pie.pie_id==83" class='pieHeader' colspan=3>OTHER</td>
-                    
+                <tr>
+                    <td colspan=5 class='pieHeader' style="width:100%">10 INCH & 9 INCH</td>
                 </tr>
                 
-                <tr ng-repeat-end ng-if="pie.pie_name!=all_pies_col[$index+1].pie_name">
-                    
-                    <td ng-if="pie.pie_name==all_pies_col[$index-1].pie_name"><input type="number" ng-model="pie.amt1" ng-change="enterPieAmount(pie.amt1,pie.pie_id-1)"></td>
-                    <td ng-if="pie.pie_name==all_pies_col[$index-1].pie_name"><input type="number" style="width:100%" ng-model="pie.amt2" ng-change="enterPieAmount(pie.amt2,pie.pie_id)"></td>
-                    
-                    <td ng-if="pie.pie_name!=all_pies_col[$index-1].pie_name && pie.pie_size==8" colspan=2 style='background-color:black'><input type='number' class='pieInput8' ng-model="pie.amt1" ng-change="enterPieAmount(pie.amt1,pie.pie_id)"></td>
-                    
-                    <td ng-if="pie.pie_name!=all_pies_col[$index-1].pie_name && (pie.pie_size==9 || pie.pie_size==0)" colspan=2 style='background-color:black'><input type='number' class='pieInput9' ng-model="pie.amt1" ng-change="enterPieAmount(pie.amt1,pie.pie_id)"></td>
-                    
-                    <td ng-if="pie.pie_name!=all_pies_col[$index-1].pie_name && pie.pie_size==10" colspan=2 style='background-color:black'><input type='number' class='pieInput10' ng-model="pie.amt1" ng-change="enterPieAmount(pie.amt1,pie.pie_id)"></td>
-                    
-                    <td class='pieName'>{{pie.pie_name}}</td>
-                    
+                <tr>
+                    <td class='pieHeader'>Pie</td>
+                    <td class='pieHeader'>Baked</td>
+                    <td class='pieHeader'>Update</td>
+                    <td class='pieHeader'>Orders</td>
+                    <td class='pieHeader'>Counter</td>
                 </tr>
                 
-                <tr ng-if="all_pies_col.length<31">
-                    <td class='pieHeader' colspan=3><button ng-click="getMyCtrlScope().show_cust_window=true" class='doneButton'>CUSTOMER INFO</button></td>
+                <tr ng-repeat="ordered_pie_total in big_ordered_pies" style="width:100%">
+                    
+                    <td style="width:53%;padding:5px">{{ordered_pie_total.pie_name}}</td>
+                    
+                    <td style="text-align:center;width:10%">
+                        <div style="width:100%;float:left" ng-style="{'color':(ordered_pie_total.ordered<=ordered_pie_total.baked?'green':'red') }">{{ordered_pie_total.baked}}</div>
+                    </td>
+                    
+                    <td style="text-align:center;width:17%;">
+                        <div style="display:flex">
+                            <input style="float:left;flex:1;height:100%;margin: auto auto;" type="number" ng-model="ordered_pie_total.to_bake_amt">
+                            <button style="float:left" ng-click="bake_pies(ordered_pie_total.pie_id, ordered_pie_total.to_bake_amt);ordered_pie_total.baked=ordered_pie_total.baked+ordered_pie_total.to_bake_amt;ordered_pie_total.to_bake_amt=null"><i class="material-icons" style="padding:none !important;font-size:14px !important">add</i></button>
+                        </div>
+                    </td>
+                    
+                    <td style="text-align:center;width:10%">{{ordered_pie_total.ordered}}</td>
+                    
+                    <td style="text-align:center;width:10%">{{ordered_pie_total.counter}}</td>
+                    
                 </tr>
 
             </table>
-        </div>
+            
+            <table cellspacing="0" style="width:50%;float:left" ng-show="big_ordered_pies||other_ordered_pies">
 
+                <tr>
+                    <td colspan=5 class='pieHeader' style="width:100%">8 INCH & OTHER</td>
+                </tr>
+                
+                <tr>
+                    <td class='pieHeader'>Pie</td>
+                    <td class='pieHeader'>Baked</td>
+                    <td class='pieHeader'>Update</td>
+                    <td class='pieHeader'>Orders</td>
+                    <td class='pieHeader'>Counter</td>
+                </tr>
+                
+                <tr ng-repeat="ordered_pie_total in other_ordered_pies" style="width:100%">
+                    
+                    <td style="width:53%;padding:5px">{{ordered_pie_total.pie_name}}</td>
+                    
+                    <td style="text-align:center;width:10%">
+                        <div style="width:100%;float:left" ng-style="{'color':(ordered_pie_total.ordered<=ordered_pie_total.baked?'green':'red') }">{{ordered_pie_total.baked}}</div>
+                    </td>
+                    
+                    <td style="text-align:center;width:17%;">
+                        <div style="display:flex">
+                            <input style="float:left;flex:1;height:100%;margin: auto auto;" type="number" ng-model="ordered_pie_total.to_bake_amt">
+                            <button style="float:left" ng-click="bake_pies(ordered_pie_total.pie_id, ordered_pie_total.to_bake_amt);ordered_pie_total.baked=ordered_pie_total.baked+ordered_pie_total.to_bake_amt;ordered_pie_total.to_bake_amt=null"><i class="material-icons" style="padding:none !important;font-size:14px !important">add</i></button>
+                        </div>
+                    </td>
+                    
+                    <td style="text-align:center;width:10%">{{ordered_pie_total.ordered}}</td>
+                    
+                    <td style="text-align:center;width:10%">{{ordered_pie_total.counter}}</td>
+                    
+                </tr>
 
-        <div class="tabcontent" ng-show="vis_page=='pieOrders'">
-            <div class="bottomnav">
-                <div>today</div>
+            </table>
+            
+            <div class="bottomNav">
+                <button ng-click="orders_date=prev_date;get_ordered_pies()" ng-disabled="!prev_date" style="width:10vw"><i class="material-icons md-48">arrow_back_ios</i></button>
+                <div style="width:55vw">{{disp_date}}</div>
+                <button ng-click="orders_date=next_date;get_ordered_pies()" ng-disabled="!next_date" style="width:10vw"><i class="material-icons md-48">arrow_forward_ios</i></button>
+                <button ng-disabled="!daily_notes" ng-click="show_notes=true" style="flex:1">Notes</button>
             </div>
+            
+        </div>
+    
+        <!-- Notes for the current date window -->
+        <div class="orderWindowBackdrop" ng-show="show_notes">
+            <div class="orderWindow" style="width:80vw;left:10vw;height:90vh;top:2vh;font-size:3vh">
+                
+                <div style="margin-bottom:1vh">Today's Notes <button style="float:right;font-size:3vh" ng-click="show_notes=false">Close</button></div>
+                
+                    <table cellspacing="0" style="width:100%">
+                        
+                        <tr>
+                            <td class='pieHeader'>Customer</td>
+                            <td class='pieHeader'>Notes</td>
+                        </tr>
+                        
+                        <tr ng-repeat="note in daily_notes">
+                            <td style="width:25%;padding:3px">{{note.last_name+', '+note.first_name}}</td>
+                            <td style="padding:3px">{{note.notes}}</td>
+                        </tr>
+                        
+                    </table>
+                
+            </div>
+
+        </div>
+    
+    
+        <!-- All of the day's orders -->
+        <div class="tabcontent" ng-show="vis_page=='pieOrders'">
+            
+            <div ng-hide="pie_orders" class="noOrdersToday">No pie orders for today!</div>
+            
+            <table cellspacing="0" style="width:100%" ng-show="pie_orders">
+
+                <tr>
+                    <td class='pieHeader'>Customer Name</td>
+                    <td class='pieHeader' style="width:10%">Time</td>
+                    <td class='pieHeader' style="width:12%">Phone</td>
+                    <td class='pieHeader'>Order</td>
+                    <td class='pieHeader' style="width:8%">Status</td>
+                </tr>
+                
+                <tr ng-repeat="pie_order in pie_orders" style="width:100%" ng-click="getMyCtrlScope().selected_order=pie_order;getMyCtrlScope().show_selected_order=true" ng-show="pie_order.last_name.indexOf(live_search_term)!=-1 || pie_order.first_name.indexOf(live_search_term)!=-1 || live_search_term==''">
+                    
+                    <td style="padding:5px" ng-class-even="'odd'">{{pie_order.last_name+', '+pie_order.first_name}}</td>
+                    <td style="padding:5px;text-align:center" ng-class-even="'odd'">{{pie_order.time}}</td>
+                    <td style="padding:5px;text-align:center" ng-class-even="'odd'">{{pie_order.phone}}</td>
+                    <td style="padding:5px;text-align:center" ng-class-even="'odd'">{{pie_order.disp_order}}</td>
+                    <td style="padding:5px;text-align:center" ng-class-even="'odd'">{{pie_order.status}}</td>
+
+                </tr>
+
+            </table>
+            
+            <div class="bottomNav">
+                <button ng-click="orders_date=prev_date;get_pie_orders()" ng-disabled="!prev_date" style="width:10vw"><i class="material-icons md-48">arrow_back_ios</i></button>
+                <div style="width:55vw">{{disp_date}}</div>
+                <button ng-click="orders_date=next_date;get_pie_orders()" ng-disabled="!next_date" style="width:10vw"><i class="material-icons md-48">arrow_forward_ios</i></button>
+                <div style="width:50vw"><input placeholder="Search" ng-model="live_search_term" ng-change="$digest()"></div>
+            </div>
+            
+        </div>
+    
+        <!-- Selected order for printing -->
+        <div class="orderWindowBackdrop" ng-show="show_selected_order">
+            <div class="orderWindow" style="width:80vw;left:10vw;height:90vh;top:2vh;font-size:3vh">
+                
+                <div style="margin-bottom:2vh">Selected Order <button style="float:right;font-size:3vh" ng-click="show_selected_order=false">Close</button></div>
+                
+                    <table cellspacing="0" style="width:80%;margin-left:10%">
+                        
+                        <tr>
+                            <td style="width:18%;border:none;padding-bottom:3vh">Customer Name: </td>
+                            <td style="border:none;padding-bottom:3vh" colspan=2>{{selected_order.last_name+', '+selected_order.first_name}}</td>
+                        </tr>
+                                                
+                        <tr>
+                            <td style="text-align:center;background-color:#ddd;r">Quantity</td>
+                            <td style="text-align:center;background-color:#ddd;">Size</td>
+                            <td style="text-align:center;background-color:#ddd;">Pie Name</td>
+                        </tr>
+                        <tr ng-repeat="pie in selected_order.pies">
+                            <td style="text-align:center;padding:3px" ng-class-even="'odd'">{{pie.quantity}}</td>
+                            <td style="text-align:center;padding:3px" ng-class-even="'odd'">{{pie.pie_size+'"'}}</td>
+                            <td style="padding:3px" ng-class-even="'odd'">{{pie.pie_name}}</td>
+                        </tr>
+                        
+                        <tr ng-show="selected_order.notes">
+                            <td style="padding-top:3vh;border:none">Notes: </td>
+                            <td style="padding-top:3vh;border:none" colspan=2>{{selected_order.notes}}</td>
+                        </tr>
+                        
+                    </table>
+                
+                    <div style="width:100%;text-align:center;position:absolute;bottom:2vh"><button style="width:30vh;height:100%;font-size:5vh" ng-click="print_slip(selected_order);show_selected_order=false">PRINT</button></div>
+                
+            </div>
+
         </div>
         
 	</body>

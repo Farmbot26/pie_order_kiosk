@@ -4,7 +4,7 @@
     "creationData": {
       "projectTypeName": "com.intel.xdk.projecttype.webapp",
       "projectGuid": "393a5efe-6fe3-4fcf-8412-581b10d45fc5",
-      "lastModifiedDate": 1534260376598,
+      "lastModifiedDate": 1538271868505,
       "creationDate": 1534260352373
     },
     "XDK-app-designer": "false",
@@ -203,31 +203,81 @@
         "runtime_": "W3C on Crosswalk",
         "name_": "Android",
         "preferences_": {
-          "android-minSdkVersion": "14",
+          "android-minSdkVersion": "16",
           "android-targetSdkVersion": "21",
           "android-installLocation": "auto",
-          "android-signed": true
+          "android-signed": true,
+          "AndroidLaunchMode": "singleTop",
+          "Fullscreen": true,
+          "Orientation": "landscape"
         },
         "isActive_": true,
         "certificateId_": "",
-        "appName_": "pie_order_kiosk",
-        "appID_": "xdk.intel.blank.template.crosswalk",
+        "appName_": "Pie Order Kiosk (A)",
+        "appID_": "com.jarvisindustrial.piekiosk",
         "appAccess_": {
           "mode": "legacy",
           "network": [],
           "intents": [],
           "navigation": []
         },
-        "icons_": [],
-        "splashes_": [],
+        "icons_": [
+          {
+            "density": "ldpi",
+            "relPath": "package-assets/icon36.png",
+            "width": 36,
+            "height": 36
+          },
+          {
+            "density": "mdpi",
+            "relPath": "package-assets/icon48.png",
+            "width": 48,
+            "height": 48
+          },
+          {
+            "density": "hdpi",
+            "relPath": "package-assets/icon72.png",
+            "width": 72,
+            "height": 72
+          },
+          {
+            "density": "xhdpi",
+            "relPath": "package-assets/icon96.png",
+            "width": 96,
+            "height": 96
+          }
+        ],
+        "splashes_": [
+          {
+            "relPath": "package-assets/JarvisIndustrialSplash320.png",
+            "density": "mdpi",
+            "height": 470,
+            "width": 320,
+            "orientation": "portrait"
+          },
+          {
+            "relPath": "package-assets/JarvisIndustrialSplash640.png",
+            "density": "hdpi",
+            "height": 640,
+            "width": 480,
+            "orientation": "portrait"
+          },
+          {
+            "relPath": "package-assets/JarvisIndustrialSplash720Android.png",
+            "density": "xhdpi",
+            "height": 960,
+            "width": 720,
+            "orientation": "portrait"
+          }
+        ],
         "addlPermissions_": "",
         "excludedLibraries_": "",
         "iosProvs_": [],
         "cordovaCLIVersion_": "6.2.0",
         "crosswalkVersion_": "23",
-        "appVersion_": "0.0.1",
-        "appAuthor_": "Intel XDK",
-        "appDescription_": "Use this template to start with a simple index.html file for creating mobile web apps.",
+        "appVersion_": "1.0",
+        "appAuthor_": "Jarvis Industrial",
+        "appDescription_": "Master version of the pie order kiosk",
         "appVersionCode_": "1",
         "signed_": true
       }
